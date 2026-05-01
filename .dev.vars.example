@@ -1,0 +1,14 @@
+# Local dev secrets for `pnpm dev` (Vite + CF Worker).
+# Copy this file to `.dev.vars` and fill in actual values.
+# (data-drills-cf のものをそのまま流用してよい — Clerk app は既存流用、
+#  Supabase URL は data-dimensions schema を参照するように後で書き換え)
+
+# Clerk auth
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxx
+CLERK_SECRET_KEY=sk_test_xxx
+
+# Supabase Postgres (data_dimensions schema をここに作る)
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+
+# Neon data-warehouse (read-only、source 取得用、Phase 1 後半で使う)
+NEON_DWH_URL=postgresql://user:pass@host:5432/data_warehouse
