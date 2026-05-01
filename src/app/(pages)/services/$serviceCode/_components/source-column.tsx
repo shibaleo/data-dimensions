@@ -43,6 +43,12 @@ export const SourceColumn = forwardRef<HTMLDivElement, Props>(function SourceCol
           const key = rowKey(sourceType, item.source_value);
           const isMapped = mappedSet.has(key);
           const isSelected = selectedKey === key;
+          // colors タブでは source_value 自身が色文字列、それ以外は meta.color
+          const dotColor = sourceType.endsWith("_color")
+            ? item.source_value
+            : typeof item.meta?.color === "string"
+              ? item.meta.color
+              : null;
           return (
             <div
               key={key}
@@ -60,10 +66,10 @@ export const SourceColumn = forwardRef<HTMLDivElement, Props>(function SourceCol
                     : "border-border/60 text-muted-foreground hover:bg-accent",
               )}
             >
-              {item.meta?.color && typeof item.meta.color === "string" ? (
+              {dotColor ? (
                 <span
-                  className="size-3 rounded-full shrink-0"
-                  style={{ backgroundColor: item.meta.color }}
+                  className="size-3 rounded-full shrink-0 border border-border/40"
+                  style={{ backgroundColor: dotColor }}
                 />
               ) : null}
               <span className="truncate">{item.label}</span>
