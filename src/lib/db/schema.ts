@@ -74,6 +74,39 @@ export const mappings = dataDimensions.table("mappings", {
 ]);
 
 // =============================================================================
+// _current views (drizzle 管理外、CREATE VIEW は drizzle/0001_views.sql 参照)
+// =============================================================================
+
+export const targetMastersCurrent = dataDimensions
+  .view("target_masters_current", {
+    id: uuid("id").notNull(),
+    revision: integer("revision").notNull(),
+    serviceId: uuid("service_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+    validFrom: timestamp("valid_from", { withTimezone: true }).notNull(),
+    name: text("name").notNull(),
+    parentId: uuid("parent_id"),
+    deleted: boolean("deleted").notNull(),
+    purged: boolean("purged").notNull(),
+  })
+  .existing();
+
+export const mappingsCurrent = dataDimensions
+  .view("mappings_current", {
+    id: uuid("id").notNull(),
+    revision: integer("revision").notNull(),
+    serviceId: uuid("service_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+    validFrom: timestamp("valid_from", { withTimezone: true }).notNull(),
+    sourceType: text("source_type").notNull(),
+    sourceValue: text("source_value").notNull(),
+    targetId: uuid("target_id").notNull(),
+    deleted: boolean("deleted").notNull(),
+    purged: boolean("purged").notNull(),
+  })
+  .existing();
+
+// =============================================================================
 // user (Clerk と紐付け、emailで lookup)
 // =============================================================================
 

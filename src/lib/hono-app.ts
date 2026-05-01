@@ -5,6 +5,9 @@ import { authenticate, type AuthResult } from "@/lib/auth";
 type Env = { Variables: { authResult: AuthResult } };
 import health from "@/routes/health";
 import services from "@/routes/services";
+import targetMasters from "@/routes/target-masters";
+import mappings from "@/routes/mappings";
+import sources from "@/routes/sources";
 import apiKeys from "@/routes/api-keys";
 import users from "@/routes/users";
 
@@ -35,6 +38,9 @@ const v1 = new Hono<Env>()
   })
   // Protected routes
   .route("/services", services)
+  .route("/target-masters", targetMasters)
+  .route("/mappings", mappings)
+  .route("/sources", sources)
   .route("/api-keys", apiKeys)
   .route("/users", users)
   // /me endpoint — return authenticated user info
