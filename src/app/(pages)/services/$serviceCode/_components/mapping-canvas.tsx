@@ -90,10 +90,38 @@ export function MappingCanvas({
     window.addEventListener("scroll", schedule, true);
     window.addEventListener("resize", schedule);
 
+    // ドラッグ中も追従させる: pointerdown → pointerup の間、rAF ループで再計算
+    let pressed = false;
+    let loopId: number | null = null;
+    const tick = () => {
+      if (!pressed) return;
+      compute();
+      loopId = requestAnimationFrame(tick);
+    };
+    const onPointerDown = () => {
+      pressed = true;
+      if (loopId == null) loopId = requestAnimationFrame(tick);
+    };
+    const onPointerUp = () => {
+      pressed = false;
+      if (loopId != null) {
+        cancelAnimationFrame(loopId);
+        loopId = null;
+      }
+      schedule(); // settle 後の最終位置
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+
     return () => {
       ro.disconnect();
       window.removeEventListener("scroll", schedule, true);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+      if (loopId != null) cancelAnimationFrame(loopId);
       if (rafId.current != null) cancelAnimationFrame(rafId.current);
     };
   }, [display, sourceRefs, targetRefs, containerRef]);

@@ -74,6 +74,28 @@ export const mappings = dataDimensions.table("mappings", {
 ]);
 
 // =============================================================================
+// 並べ替え用の side テーブル (bitemporal ではない、UI 状態)
+// =============================================================================
+
+export const targetMasterOrder = dataDimensions.table("target_master_order", {
+  targetId: uuid("target_id").primaryKey(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const sourceOrder = dataDimensions.table(
+  "source_order",
+  {
+    serviceId: uuid("service_id").notNull(),
+    sourceType: text("source_type").notNull(),
+    sourceValue: text("source_value").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.serviceId, t.sourceType, t.sourceValue] })],
+);
+
+// =============================================================================
 // _current views (drizzle 管理外、CREATE VIEW は drizzle/0001_views.sql 参照)
 // =============================================================================
 

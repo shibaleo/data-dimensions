@@ -56,6 +56,41 @@ export function useUpdateTargetMaster(serviceId: string | undefined) {
   });
 }
 
+export function useReorderTargetMasters(serviceId: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (ids: string[]) =>
+      unwrap(rpc.api.v1["target-masters"].reorder.$patch({ json: { ids } })),
+    onMutate: async (ids) => {
+      if (!serviceId) return;
+      const key = targetMasterKeys.byService(serviceId);
+      await qc.cancelQueries({ queryKey: key });
+      const previous = qc.getQueryData<TargetMaster[]>(key);
+      if (previous) {
+        const indexMap = new Map(ids.map((id, i) => [id, i]));
+        qc.setQueryData(
+          key,
+          [...previous].sort(
+            (a, b) =>
+              (indexMap.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+              (indexMap.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+          ),
+        );
+      }
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => {
+      if (serviceId && ctx?.previous) {
+        qc.setQueryData(targetMasterKeys.byService(serviceId), ctx.previous);
+      }
+    },
+    onSettled: () => {
+      if (serviceId)
+        qc.invalidateQueries({ queryKey: targetMasterKeys.byService(serviceId) });
+    },
+  });
+}
+
 export function useArchiveTargetMaster(serviceId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({

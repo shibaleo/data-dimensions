@@ -6,10 +6,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ApiError } from "@/lib/api-client";
 import type { Service } from "@/hooks/queries/use-service-data";
-import { useTargetMasters } from "@/hooks/queries/use-target-masters";
+import {
+  useTargetMasters,
+  useReorderTargetMasters,
+} from "@/hooks/queries/use-target-masters";
 import { useMappings, useCommitMappings } from "@/hooks/queries/use-mappings";
 import {
   useSources,
+  useReorderSources,
   sourceTypeFor,
   type SourceType,
 } from "@/hooks/queries/use-sources";
@@ -37,6 +41,8 @@ export function MappingEditor({ service }: Props) {
 
   const draft = useMappingDraft(mappings);
   const commit = useCommitMappings(service.id);
+  const reorderTargets = useReorderTargetMasters(service.id);
+  const reorderSourcesMut = useReorderSources(service.code, sourceTab);
 
   // current source_type に絞った display
   const displayForType = useMemo(
@@ -128,6 +134,7 @@ export function MappingEditor({ service }: Props) {
               selectedKey={selectedSourceKey}
               rowRefs={sourceRefs}
               onSelect={handleSelectSource}
+              onReorder={(values) => reorderSourcesMut.mutate(values)}
               loading={sourcesLoading}
             />
             {sourcesError ? (
@@ -144,6 +151,7 @@ export function MappingEditor({ service }: Props) {
               selectedTargetId={null}
               rowRefs={targetRefs}
               onSelect={handleSelectTarget}
+              onReorder={(ids) => reorderTargets.mutate(ids)}
               loading={targetsLoading}
             />
           </div>
