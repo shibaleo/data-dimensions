@@ -84,12 +84,14 @@ function SortableRow({
         opacity: isDragging ? 0.5 : 1,
       }}
       className={cn(
-        "group flex items-center gap-1.5 rounded-md border bg-card px-1.5 text-sm transition-colors h-9",
+        "group relative flex items-center gap-1.5 rounded-md border bg-card px-1.5 text-sm transition-colors h-9",
         isSelected
           ? "border-primary ring-1 ring-primary"
           : "border-border hover:bg-accent",
       )}
     >
+      {/* port dot at left edge center (line endpoint) */}
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 size-2 rounded-full bg-muted-foreground/70 ring-2 ring-background pointer-events-none" />
       <button
         type="button"
         {...attributes}

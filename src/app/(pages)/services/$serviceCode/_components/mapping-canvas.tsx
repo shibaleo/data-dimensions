@@ -133,9 +133,9 @@ export function MappingCanvas({
       case "repointed":
         return "stroke-amber-500";
       case "removed":
-        return "stroke-rose-500/70 [stroke-dasharray:4_3]";
+        return "stroke-rose-500/80 [stroke-dasharray:4_3]";
       default:
-        return "stroke-muted-foreground/60";
+        return "stroke-muted-foreground/80";
     }
   };
 
@@ -159,8 +159,8 @@ export function MappingCanvas({
           <path
             d={l.d}
             fill="none"
-            strokeWidth={1.25}
-            className={cn(stateClass(l.state), "group-hover:opacity-100 opacity-70 transition-opacity")}
+            strokeWidth={1.5}
+            className={cn(stateClass(l.state), "group-hover:opacity-100 transition-opacity")}
           />
           {l.mappingId && l.state !== "removed" ? (
             <g

@@ -123,47 +123,50 @@ export function MappingEditor({ service }: Props) {
         ) : null}
       </div>
 
-      {/* Body — 2 columns + svg overlay */}
-      <div ref={canvasContainerRef} className="relative flex-1 overflow-auto">
-        <div className="grid grid-cols-[1fr_minmax(80px,1fr)_1fr] gap-0 p-4">
-          <div className="pr-2">
-            <SourceColumn
-              items={sources}
-              sourceType={sourceType}
-              display={draft.display}
-              selectedKey={selectedSourceKey}
-              rowRefs={sourceRefs}
-              onSelect={handleSelectSource}
-              onReorder={(values) => reorderSourcesMut.mutate(values)}
-              loading={sourcesLoading}
-            />
-            {sourcesError ? (
-              <p className="text-xs text-destructive mt-2 px-2">
-                Source 取得失敗: {(sourcesError as Error).message}
-              </p>
-            ) : null}
+      {/* Body — scroll viewport */}
+      <div className="flex-1 overflow-auto">
+        {/* Scroll content + canvas anchor */}
+        <div ref={canvasContainerRef} className="relative p-4">
+          <div className="grid grid-cols-[1fr_minmax(80px,1fr)_1fr] gap-0">
+            <div className="pr-2">
+              <SourceColumn
+                items={sources}
+                sourceType={sourceType}
+                display={draft.display}
+                selectedKey={selectedSourceKey}
+                rowRefs={sourceRefs}
+                onSelect={handleSelectSource}
+                onReorder={(values) => reorderSourcesMut.mutate(values)}
+                loading={sourcesLoading}
+              />
+              {sourcesError ? (
+                <p className="text-xs text-destructive mt-2 px-2">
+                  Source 取得失敗: {(sourcesError as Error).message}
+                </p>
+              ) : null}
+            </div>
+            <div className="pointer-events-none" aria-hidden />
+            <div className="pl-2">
+              <TargetColumn
+                serviceId={service.id}
+                targets={targets}
+                selectedTargetId={null}
+                rowRefs={targetRefs}
+                onSelect={handleSelectTarget}
+                onReorder={(ids) => reorderTargets.mutate(ids)}
+                loading={targetsLoading}
+              />
+            </div>
           </div>
-          <div className="pointer-events-none" aria-hidden />
-          <div className="pl-2">
-            <TargetColumn
-              serviceId={service.id}
-              targets={targets}
-              selectedTargetId={null}
-              rowRefs={targetRefs}
-              onSelect={handleSelectTarget}
-              onReorder={(ids) => reorderTargets.mutate(ids)}
-              loading={targetsLoading}
-            />
-          </div>
-        </div>
 
-        <MappingCanvas
-          sourceRefs={sourceRefs}
-          targetRefs={targetRefs}
-          display={displayForType}
-          containerRef={canvasContainerRef}
-          onRemove={draft.remove}
-        />
+          <MappingCanvas
+            sourceRefs={sourceRefs}
+            targetRefs={targetRefs}
+            display={displayForType}
+            containerRef={canvasContainerRef}
+            onRemove={draft.remove}
+          />
+        </div>
       </div>
 
       {/* Footer */}
