@@ -23,6 +23,7 @@ type Action =
       targetId: string;
     }
   | { type: "remove"; mappingId: string }
+  | { type: "removeAdd"; sourceType: string; sourceValue: string }
   | { type: "repoint"; mappingId: string; newTargetId: string }
   | { type: "reset" };
 
@@ -61,11 +62,7 @@ function reducer(state: DraftState, action: Action): DraftState {
       };
     }
     case "remove": {
-      // 既存 add を remove するなら add ごと削除 (no-op)
-      const addIdx = state.changes.findIndex(
-        (c) => c.type === "add" && false, // add は mappingId を持たないので別ロジック
-      );
-      // 既存 repoint があれば破棄して remove に置換
+      // 既存 repoint があれば破棄して remove に置換 (同 id の重複除去)
       const filtered = state.changes.filter(
         (c) =>
           !(
@@ -78,6 +75,19 @@ function reducer(state: DraftState, action: Action): DraftState {
           ...filtered,
           { type: "remove", mapping_id: action.mappingId },
         ],
+      };
+    }
+    case "removeAdd": {
+      // baseline がない source への pending add を取り消す
+      return {
+        changes: state.changes.filter(
+          (c) =>
+            !(
+              c.type === "add" &&
+              c.source_type === action.sourceType &&
+              c.source_value === action.sourceValue
+            ),
+        ),
       };
     }
     case "repoint": {
@@ -226,6 +236,20 @@ export function useMappingDraft(baseline: Mapping[]) {
     remove: useCallback((mappingId: string) => {
       dispatch({ type: "remove", mappingId });
     }, []),
+    /** source 単位で削除 (baseline があれば remove、draft add なら add を取り消し) */
+    removeBySource: useCallback(
+      (sourceType: string, sourceValue: string) => {
+        const existing = baseline.find(
+          (m) => m.sourceType === sourceType && m.sourceValue === sourceValue,
+        );
+        if (existing) {
+          dispatch({ type: "remove", mappingId: existing.id });
+        } else {
+          dispatch({ type: "removeAdd", sourceType, sourceValue });
+        }
+      },
+      [baseline],
+    ),
     reset: useCallback(() => {
       dispatch({ type: "reset" });
     }, []),
