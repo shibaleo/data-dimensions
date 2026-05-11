@@ -147,16 +147,24 @@ export function MappingCanvas({
       style={{ width: size.w, height: size.h }}
     >
       {lines.map((l) => (
-        <g key={l.key}>
+        <g key={l.key} className="group">
+          {/* 太い透明 path: ホバー領域を広げる */}
           <path
             d={l.d}
             fill="none"
-            strokeWidth={1.5}
-            className={cn(stateClass(l.state))}
+            strokeWidth={16}
+            stroke="transparent"
+            className="pointer-events-auto"
+          />
+          <path
+            d={l.d}
+            fill="none"
+            strokeWidth={1.25}
+            className={cn(stateClass(l.state), "group-hover:opacity-100 opacity-70 transition-opacity")}
           />
           {l.mappingId && l.state !== "removed" ? (
             <g
-              className="cursor-pointer pointer-events-auto"
+              className="cursor-pointer pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={() => onRemove(l.mappingId!)}
             >
               <circle

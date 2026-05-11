@@ -84,7 +84,7 @@ function SortableRow({
         opacity: isDragging ? 0.5 : 1,
       }}
       className={cn(
-        "group flex items-center gap-1.5 rounded-md border bg-card px-1.5 py-1.5 text-sm transition-colors",
+        "group flex items-center gap-1.5 rounded-md border bg-card px-1.5 text-sm transition-colors h-9",
         isSelected
           ? "border-primary ring-1 ring-primary"
           : "border-border hover:bg-accent",
@@ -94,7 +94,7 @@ function SortableRow({
         type="button"
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground touch-none"
+        className="cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground touch-none opacity-0 group-hover:opacity-100 transition-opacity"
         aria-label="Drag handle"
       >
         <GripVertical className="size-3.5" />
